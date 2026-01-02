@@ -15,6 +15,7 @@ function Hero() {
             location: locationRef.current.value
         })
         setIsSearched(true)
+
         
     }
 
