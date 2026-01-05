@@ -1,7 +1,82 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
 
 @import "tailwindcss";
 
-*{
-    font-family: Outfit;
+* {
+  font-family: Outfit;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* ===== Job Description Rich Text ===== */
+
+.rich-text {
+  font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  color: #4b5563; /* soft gray text */
+  line-height: 1.8;
+  font-size: 15px;
+}
+
+/* Main Headings */
+.rich-text h1,
+.rich-text h2 {
+  color: #111827; /* near black */
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.rich-text h1 {
+  font-size: 22px;
+}
+
+.rich-text h2 {
+  font-size: 20px;
+  margin-top: 28px;
+}
+
+/* Paragraph */
+.rich-text p {
+  margin-bottom: 14px;
+  max-width: 700px;
+}
+
+/* Ordered List */
+.rich-text ol {
+  padding-left: 20px;
+  margin-top: 12px;
+}
+
+.rich-text ol li {
+  margin-bottom: 10px;
+  padding-left: 6px;
+}
+
+/* List Numbers Styling */
+.rich-text ol li::marker {
+  font-weight: 500;
+  color: #6b7280;
+}
+
+/* Unordered List (if needed) */
+.rich-text ul {
+  padding-left: 20px;
+}
+
+.rich-text ul li {
+  margin-bottom: 8px;
+}
+
+/* Strong text */
+.rich-text strong {
+  font-weight: 600;
+  color: #111827;
 }
