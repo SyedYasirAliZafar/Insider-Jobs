@@ -11,7 +11,7 @@ import connectCloudinary from './config/cloudinary.js'
 const app = express()
 
 await connectDB()
-await connectCloudinary
+await connectCloudinary()
 
 // Middlewares
 app.use(cors())
@@ -21,16 +21,17 @@ const PORT = process.env.PORT || 5000
 
 // Routes
 app.get('/', (req, res) => {
-  res.send('Api Working')
+    res.send('Api Working')
 })
 
 // ❗ Route that throws real error
 app.get('/debug-sentry', (req, res) => {
-  throw new Error('My first Sentry error!')
+    throw new Error('My first Sentry error!')
 })
 
-app.post('/webhooks', clerkWebhooks)
 
+
+app.post('/webhooks', clerkWebhooks)
 app.use('/api/company', companyRoutes)
 
 // ❗ Sentry MUST be after routes
@@ -38,12 +39,12 @@ Sentry.setupExpressErrorHandler(app)
 
 // Optional fallback error handler
 app.use((err, req, res, next) => {
-  res.status(500).json({
-    message: "Internal Server Error",
-    sentryId: res.sentry
-  })
+    res.status(500).json({
+        message: "Internal Server Error",
+        sentryId: res.sentry
+    })
 })
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`)
+    console.log(`Server running on port ${PORT}`)
 })

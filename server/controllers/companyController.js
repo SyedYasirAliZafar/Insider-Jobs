@@ -7,36 +7,33 @@ import generateToken from "../utils/generateToken.js";
 
 export const registerCompany = async (req, res) => {
   const { name, email, password } = req.body;
-
   const imageFile = req.file;
 
   if (!name || !email || !password || !imageFile) {
-    return res.json({ success: false, message: "Missing Details" });
+    return res.status(400).json({ message: "All fields are required" });
   }
 
   try {
-    const companyExists = await Company.findOne({ email });
+    const existingCompany = await Company.findOne({ email });
 
-    if (companyExists) {
-      return res.json({
-        success: false,
-        message: "Company already registered",
-      });
+    if (existingCompany) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Company already exists" });
     }
 
     const salt = await bcrypt.genSalt(10);
-    const hashPassword = await bcrypt.hash(password, salt);
+    const hashedPassword = await bcrypt.hash(password, salt);
 
     const imageUpload = await cloudinary.uploader.upload(imageFile.path);
-
     const company = await Company.create({
       name,
       email,
-      password: hashPassword,
+      password: hashedPassword,
       image: imageUpload.secure_url,
     });
 
-    res.json({
+    return res.status(200).json({
       success: true,
       company: {
         _id: company._id,
@@ -47,10 +44,7 @@ export const registerCompany = async (req, res) => {
       token: generateToken(company._id),
     });
   } catch (error) {
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    console.log(error.message);
   }
 };
 

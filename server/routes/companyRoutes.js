@@ -13,9 +13,7 @@ import upload from "../config/multer.js";
 
 const router = express.Router();
 
-
-
-router.post("/register", upload.single('image') , registerCompany);
+router.post("/register", upload.single("image") , registerCompany);
 
 router.post("/login", loginCompany);
 
@@ -30,6 +28,5 @@ router.get("/list-jobs", getCompanyPostedJobs);
 router.post("/change-status", ChangeJobApplicationStatus);
 
 router.post("/change-visibilty", changeVisibility);
-
 
 export default router
