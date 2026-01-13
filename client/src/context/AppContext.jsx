@@ -2,45 +2,53 @@ import { createContext, useEffect } from "react";
 import { useState } from "react";
 import { jobsData } from "../assets/assets";
 
-export const AppContext = createContext()
+export const AppContext = createContext();
 
 export const AppContextProvider = (props) => {
 
-    const [searchFilter, setSearchFilter] = useState({
-        title: "", 
-        location: ""
-    })
+    const backendUrl = import.meta.env.VITE_BACKEND_URL
 
-    const [isSearched, setIsSearched] = useState(false)
+  const [searchFilter, setSearchFilter] = useState({
+    title: "",
+    location: "",
+  });
 
-    const [jobs, setJobs] = useState([])
+  const [isSearched, setIsSearched] = useState(false);
 
-    const [showRecruiterLogin, setShowRecruiterLogin] = useState(false)
+  const [jobs, setJobs] = useState([]);
 
-    // function to fetch job data
+  const [showRecruiterLogin, setShowRecruiterLogin] = useState(false);
 
-    const fetchJobs = async () =>{
-        setJobs(jobsData)
-    }
+  const [companyToken, setCompanyToken] = useState(null);
+  const [companyData, setCompanyData] = useState(null);
 
-    useEffect(()=>{
-        fetchJobs()
-    }, [])
+  // function to fetch job data
 
-    const value = {
-        searchFilter,
-        setSearchFilter,
-        isSearched,
-        setIsSearched,
-        jobs, 
-        setJobs,
-        showRecruiterLogin,
-        setShowRecruiterLogin
+  const fetchJobs = async () => {
+    setJobs(jobsData);
+  };
 
-    }
+  useEffect(() => {
+    fetchJobs();
+  }, []);
 
-    return (<AppContext.Provider value={value}>
-        {props.children}
-    </AppContext.Provider>)
+  const value = {
+    searchFilter,
+    setSearchFilter,
+    isSearched,
+    setIsSearched,
+    jobs,
+    setJobs,
+    showRecruiterLogin,
+    setShowRecruiterLogin,
+    companyToken,
+    companyData,
+    setCompanyData,
+    setCompanyToken,
+    backendUrl
+  };
 
-}
+  return (
+    <AppContext.Provider value={value}>{props.children}</AppContext.Provider>
+  );
+};
