@@ -8,7 +8,7 @@ function JobCard({ job }) {
   return (
     <div className="border p-6 shadow-amber-50 rounded">
       <div className="flex justify-between items-center">
-        <img src={assets.company_icon} alt="" className="h-8" />
+        <img src={job.companyId.image} alt="" className="h-8" />
       </div>
       <h4 className="font-medium text-xl mt-2">{job.title}</h4>
       <div className="flex items-center gap-3 mt-2 text-xs">

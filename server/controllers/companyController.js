@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import { v2 as cloudinary } from "cloudinary";
 import generateToken from "../utils/generateToken.js";
 import { Job } from "../models/job.model.js";
+import {JobApplication} from "../models/jobApplication.js"
 
 // Register a new Company
 
@@ -108,6 +109,7 @@ export const postJob = async (req, res) => {
       date: Date.now(),
       level,
       category,
+      visible: true
     });
 
     await newJob.save();
@@ -130,11 +132,16 @@ export const getCompanyPostedJobs = async (req, res) => {
 
     const jobs = await Job.find({ companyId });
 
-    // Todo adding no of applicants info in data
+    // adding no of applicants info in data
+
+    const jobsData = await Promise.all(jobs.map( async (job)=>{
+        const applicants = await JobApplication.find({jobId: job._id})
+        return {...job.toObject(),applicants:applicants.length}
+    }))
 
     res.json({
       success: true,
-      jobsData: jobs,
+      jobsData
     });
   } catch (error) {
     res.json({ success: false, message: error.message });
@@ -150,19 +157,21 @@ export const ChangeJobApplicationStatus = async (req, res) => {};
 export const changeVisibility = async (req, res) => {
   try {
     const { id } = req.body;
-
     const companyId = req.company._id;
 
     const job = await Job.findById(id);
-
-    if (companyId.toString() === job.companyId.toString()) {
-      job.visible = !job.visible;
+    if (!job) {
+      return res.json({ success: false, message: "Job not found" });
     }
 
+    if (companyId.toString() !== job.companyId.toString()) {
+      return res.status(403).json({ success: false, message: "Not authorized" });
+    }
+
+    job.visible = !job.visible;
     await job.save();
 
-    res.json({success: true, job})
-
+    res.json({ success: true, job });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

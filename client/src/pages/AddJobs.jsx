@@ -30,7 +30,7 @@ function AddJobs() {
       );
 
       if (data.success) {
-        toast.success(data.message);
+        toast.success("Job added Successfully");
         setTitle("");
         setSalary(0);
         quillRef.current.root.innerHTML = "";
@@ -120,7 +120,7 @@ function AddJobs() {
           onChange={(e) => setSalary(Number(e.target.value))}
           type="Number"
           placeholder="2500"
-          className="w-full px-3 py-2 border-2 border-gray-300 rounded sm:w-[120px]"
+          className="w-full px-3 py-2 border-2 border-gray-300 rounded sm:w-30"
         />
       </div>
       <button className="w-28 py-3 mt-4 rounded bg-black text-white cursor-pointer active:scale-95 transition">

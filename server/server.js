@@ -4,7 +4,7 @@ import cors from "cors";
 import "dotenv/config";
 import connectDB from "./config/db.js";  
 import * as Sentry from "@sentry/node";
-import { clerkWebhooks } from "./controllers/webhooks.js";
+import  clerkWebhooks  from "./controllers/webhooks.js";
 import companyRoutes from "./routes/companyRoutes.js";
 import jobRoutes from "./routes/jobRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
@@ -23,7 +23,7 @@ app.use(clerkMiddleware())
 
 const PORT = process.env.PORT || 5000;
 
-// Routes
+
 app.get("/", (req, res) => {
   res.send("Api Working");
 });
@@ -51,6 +51,17 @@ app.use((err, req, res, next) => {
     sentryId: res.sentry,
   });
 });
+
+// app.get("/", clerkMiddleware(), (req, res) => {
+//   console.log("Headers:", req.headers);
+//   console.log("Auth object:", req.auth);
+//   res.json({ auth: req.auth });
+// });
+
+// app.get("/", (req, res) => {
+//   console.log(req.auth().userId); // ab proper id aayegi
+//   res.json({ userId: req.auth.userId });
+// });
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);

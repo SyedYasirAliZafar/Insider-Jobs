@@ -6,10 +6,16 @@ import { v2 as cloudinary } from "cloudinary";
 //  get user data
 
 export const getUserData = async (req, res) => {
-  const userId = req.auth.userId;
+  const userId = req.auth().userId;
+  console.log(userId);
+  console.log(req.auth());
 
   try {
-    const user = await User.find(userId);
+    const user = await User.find({ _id: userId }); // ✅ fixed
+
+    console.log(req.headers);
+
+    console.log(user);
 
     if (!user) {
       return res.json({
