@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import Quill from "quill";
 import { JobCategories, JobLocations } from "../assets/assets";
+import { AppContext } from "../context/AppContext";
+import { toast } from "react-toastify";
+import axios from "axios";
 
 function AddJobs() {
   const [title, setTitle] = useState("");
@@ -12,6 +15,33 @@ function AddJobs() {
   const editorRef = useRef(null);
   const quillRef = useRef(null);
 
+  const { backendUrl, companyToken } = useContext(AppContext);
+
+  const onSubmitHandler = async (e) => {
+    e.preventDefault();
+
+    try {
+      const description = quillRef.current.root.innerHTML;
+
+      const { data } = await axios.post(
+        backendUrl + "/api/company/post-job",
+        { title, description, location, salary, category, level },
+        { headers: { token: companyToken } }
+      );
+
+      if (data.success) {
+        toast.success(data.message);
+        setTitle("");
+        setSalary(0);
+        quillRef.current.root.innerHTML = "";
+      } else {
+        toast.error(data.message);
+      }
+    } catch (error) {
+      toast.error(error.message);
+    }
+  };
+
   useEffect(() => {
     if (!quillRef.current && editorRef.current) {
       quillRef.current = new Quill(editorRef.current, {
@@ -21,7 +51,10 @@ function AddJobs() {
   }, []);
 
   return (
-    <form className="container p-4 flex flex-col w-full items-start gap-3">
+    <form
+      onSubmit={onSubmitHandler}
+      className="container p-4 flex flex-col w-full items-start gap-3"
+    >
       <div className="w-full">
         <p className="mb-2">Job Title</p>
         <input
@@ -42,7 +75,10 @@ function AddJobs() {
       <div className="flex flex-col sm:flex-row gap-2 w-full sm:gap-8">
         <div>
           <p className="mb-2">Job Category</p>
-          <select className="w-full px-3 py-2 border-2 border-gray-300 rounded" onChange={(e) => setCategory(e.target.value)}>
+          <select
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded"
+            onChange={(e) => setCategory(e.target.value)}
+          >
             {JobCategories.map((category, index) => (
               <option key={index} value={category}>
                 {category}
@@ -53,7 +89,10 @@ function AddJobs() {
 
         <div>
           <p className="mb-2">Job Location</p>
-          <select className="w-full px-3 py-2 border-2 border-gray-300 rounded" onChange={(e) => setLocation(e.target.value)}>
+          <select
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded"
+            onChange={(e) => setLocation(e.target.value)}
+          >
             {JobLocations.map((location, index) => (
               <option key={index} value={location}>
                 {location}
@@ -64,7 +103,10 @@ function AddJobs() {
 
         <div>
           <p className="mb-2">Job Level</p>
-          <select className="w-full px-3 py-2 border-2 border-gray-300 rounded" onChange={(e) => setLevel(e.target.value)}>
+          <select
+            className="w-full px-3 py-2 border-2 border-gray-300 rounded"
+            onChange={(e) => setLevel(e.target.value)}
+          >
             <option value="Beginner Level">Beginner Level</option>
             <option value="Intermediate Level">Intermediate Level</option>
             <option value="Senior Level">Senior Level</option>
@@ -75,13 +117,15 @@ function AddJobs() {
         <p className="mb-2">Job Salary</p>
         <input
           min={0}
-          onChange={(e) => setSalary(e.target.value)}
+          onChange={(e) => setSalary(Number(e.target.value))}
           type="Number"
           placeholder="2500"
-          className="w-full px-3 py-2 border-2 border-gray-300 rounded sm:w-[120px]" 
+          className="w-full px-3 py-2 border-2 border-gray-300 rounded sm:w-[120px]"
         />
       </div>
-      <button className="w-28 py-3 mt-4 rounded bg-black text-white cursor-pointer active:scale-95 transition">ADD</button>
+      <button className="w-28 py-3 mt-4 rounded bg-black text-white cursor-pointer active:scale-95 transition">
+        ADD
+      </button>
     </form>
   );
 }
