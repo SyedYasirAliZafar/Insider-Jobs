@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { AppContext } from "../context/AppContext";
 import Loading from "../components/Loading";
 import Navbar from "../components/Navbar";
@@ -10,13 +10,19 @@ import moment from "moment";
 import JobCard from "../components/JobCard";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useClerk } from "@clerk/clerk-react";
 
 function ApplyJob() {
+
+  const { openSignIn } = useClerk();
+
   const { id } = useParams();
+
+  const navigate = useNavigate()
 
   const [JobData, setJobData] = useState(null);
 
-  const { jobs, backendUrl } = useContext(AppContext);
+  const { jobs, backendUrl, userData, userApplications } = useContext(AppContext);
 
   const fetchJobs = async () => {
  try {
@@ -31,6 +37,24 @@ function ApplyJob() {
       toast.error(error.message)
     }
   };
+
+  const applyHandler = async () => {
+    try {
+      
+     if(!userData?._id){
+      toast.error("Logged In to apply for a Job")
+      return openSignIn()
+     }
+
+      if(!userData.resume){
+        navigate("/applications")
+        return toast.error("Upload resume to apply")
+      }
+
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
 
   useEffect(() => {
     if (jobs.length > 0) {
@@ -76,7 +100,7 @@ function ApplyJob() {
             </div>
 
             <div className="flex flex-col justify-center text-end text-sm max-md:mx-auto max-md:text-center">
-              <button className="bg-blue-600 p-2.5 px-10 text-white rounded cursor-pointer active:scale-95 transition">
+              <button onClick={applyHandler} className="bg-blue-600 p-2.5 px-10 text-white rounded cursor-pointer active:scale-95 transition">
                 Apply Now
               </button>
               <p className="mt-1 text-gray-600">
@@ -92,7 +116,7 @@ function ApplyJob() {
                 className="rich-text"
                 dangerouslySetInnerHTML={{ __html: JobData.description }}
               ></div>
-              <button className="bg-blue-600 p-2.5 px-10 text-white rounded cursor-pointer active:scale-95 transition mt-10">
+              <button onClick={applyHandler} className="bg-blue-600 p-2.5 px-10 text-white rounded cursor-pointer active:scale-95 transition mt-10">
                 Apply Now
               </button>
             </div>

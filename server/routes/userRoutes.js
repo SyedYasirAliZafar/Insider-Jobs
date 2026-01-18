@@ -9,13 +9,13 @@ import upload from "../config/multer.js";
 
 const router = express.Router();
 
-router.get("/user", getUserData);
+router.get("/user/:id", getUserData);
 
 router.post("/apply", applyForJob);
 
 router.get("/applications", getUserJobApplications);
 
-router.post("/update-resume", upload.single('resume') ,updateUserResume);
+router.post("/update-resume/:id", upload.single('resume') ,updateUserResume);
 
 
 export default router;

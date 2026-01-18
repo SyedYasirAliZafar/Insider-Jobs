@@ -70,27 +70,26 @@ export const AppContextProvider = (props) => {
   const fetchUserData = async () => {
     try {
       const token = await getToken(); // important!
-      
-      console.log(user)
 
-      const { data } = await axios.get(backendUrl + "/api/users/user", {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      console.log(user);
 
-      
-      
-      console.log(token)
+      const { data } = await axios.get(
+        backendUrl + `/api/users/user/${user?.id}`, // <--- Notice the '/'
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
 
-      if(data.success){
-        setUserData(data.user)
+      console.log(token);
+
+      if (data.success) {
+        setUserData(data.user);
+      } else {
+        toast.error(data.message);
       }
-      else{
-        toast.error(data.message)
-      }
-      console.log(data)
-
+      console.log(data);
     } catch (error) {
-      toast.error(error.message)
+      toast.error(error.message);
     }
   };
 
@@ -110,11 +109,11 @@ export const AppContextProvider = (props) => {
     }
   }, [companyToken]);
 
-  useEffect(()=>{
-    if(user){
-      fetchUserData()
+  useEffect(() => {
+    if (user) {
+      fetchUserData();
     }
-  },[user])
+  }, [user]);
 
   const value = {
     searchFilter,
@@ -130,6 +129,11 @@ export const AppContextProvider = (props) => {
     setCompanyData,
     setCompanyToken,
     backendUrl,
+    userData,
+    setUserData,
+    userApplications,
+    setUserApplications,
+    fetchUserData,
   };
 
   return (

@@ -6,19 +6,14 @@ import { v2 as cloudinary } from "cloudinary";
 //  get user data
 
 export const getUserData = async (req, res) => {
-  const userId = req.auth().userId;
-  console.log(userId);
-  console.log(req.auth());
+  const { id } = req.params;
+  console.log(id, "User ID");
 
   try {
-    const user = await User.find({ _id: userId }); // ✅ fixed
-
-    console.log(req.headers);
-
-    console.log(user);
+    const user = await User.findOne({ _id: id });
 
     if (!user) {
-      return res.json({
+      return res.status(404).json({
         success: false,
         message: "User not Found",
       });
@@ -29,7 +24,7 @@ export const getUserData = async (req, res) => {
       user,
     });
   } catch (error) {
-    res.json({ success: false, message: error.message });
+    res.status(500).json({ success: false, message: error.message });
   }
 };
 
@@ -112,11 +107,13 @@ export const getUserJobApplications = async (req, res) => {
 
 export const updateUserResume = async (req, res) => {
   try {
-    const userId = req.auth.userId;
-
-    const resumeFile = req.resumeFile;
+    const userId = req.params.id; // get from params
+    const resumeFile = req.file;
 
     const userData = await User.findById(userId);
+    if (!userData) {
+      return res.status(404).json({ success: false, message: "User not found" });
+    }
 
     if (resumeFile) {
       const resumeUpload = await cloudinary.uploader.upload(resumeFile.path);
@@ -125,14 +122,11 @@ export const updateUserResume = async (req, res) => {
 
     await userData.save();
 
-    return res.json({
-      success: true,
-      message: "Resume Updates",
-    });
+    return res.json({ success: true, message: "Resume Updated" });
   } catch (error) {
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    console.error(error);
+    return res.status(500).json({ success: false, message: error.message });
   }
 };
+
+
