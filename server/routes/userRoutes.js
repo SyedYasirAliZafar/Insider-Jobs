@@ -11,9 +11,9 @@ const router = express.Router();
 
 router.get("/user/:id", getUserData);
 
-router.post("/apply", applyForJob);
+router.post("/apply/:id", applyForJob);
 
-router.get("/applications", getUserJobApplications);
+router.get("/applications/:id", getUserJobApplications);
 
 router.post("/update-resume/:id", upload.single('resume') ,updateUserResume);
 

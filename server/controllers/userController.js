@@ -31,45 +31,46 @@ export const getUserData = async (req, res) => {
 // apply for a job
 
 export const applyForJob = async (req, res) => {
-  const { jobId } = req.body;
-
-  const userId = req.auth.userId;
-
   try {
-    const isAlreadyApplied = await JobApplication.find({ jobId, userId });
+    const { jobId } = req.body;
+    const userId = req.params.id; // <-- userId from URL params
 
-    if (isAlreadyApplied.length > 0) {
-      return res.json({
-        success: false,
-        message: "Already Applied",
-      });
+    if (!jobId) {
+      return res.json({ success: false, message: "Job ID is required" });
     }
 
-    const jobData = await Job.findById(jobId);
-
-    if (!jobData) {
-      return res.json({
-        success: false,
-        message: "Job not Found",
-      });
+    // Check user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.json({ success: false, message: "User not found" });
     }
 
-    await JobApplication.create({
-      companyId: jobData.companyId,
-      userId,
-      jobId,
-      date: Date.now(),
-    });
+    // Check already applied
+    const alreadyApplied = await JobApplication.findOne({ jobId, userId });
+    if (alreadyApplied) {
+      return res.json({ success: false, message: "Already Applied" });
+    }
 
-    res.json({
-      success: true,
-      message: "Applied Successfully",
-    });
+    // Check job exists
+    const job = await Job.findById(jobId);
+    if (!job) {
+      return res.json({ success: false, message: "Job not Found" });
+    }
+
+    // Create application
+// create application and store in a variable
+const application = await JobApplication.create({
+  companyId: job.companyId,
+  userId,
+  jobId,
+  date: new Date(),
+});
+
+// return response with the created object
+return res.json({ success: true, message: "Applied Successfully", application });
+
   } catch (error) {
-    res.json({
-      success: false,
-      message: error.message,
-    });
+    return res.json({ success: false, message: error.message });
   }
 };
 
@@ -77,7 +78,11 @@ export const applyForJob = async (req, res) => {
 
 export const getUserJobApplications = async (req, res) => {
   try {
-    const userId = req.auth.userId;
+    const userId = req.params.id; // must match what was stored in JobApplication.userId
+
+    if(!userId){
+      return ("Id not found")
+    }
 
     const application = await JobApplication.find({ userId })
       .populate("companyId", "name email image")
@@ -112,7 +117,9 @@ export const updateUserResume = async (req, res) => {
 
     const userData = await User.findById(userId);
     if (!userData) {
-      return res.status(404).json({ success: false, message: "User not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "User not found" });
     }
 
     if (resumeFile) {
@@ -128,5 +135,3 @@ export const updateUserResume = async (req, res) => {
     return res.status(500).json({ success: false, message: error.message });
   }
 };
-
-
